@@ -1,6 +1,7 @@
 # Monitoring Servers and Docker Containers using Prometheus with Grafana
 
 ## 1. Introduction
+
 Infrastructure monitoring is the basis for application performance management. The underlying system’s availability and health must be maximized continually. To achieve this, one has to monitor the system metrics like CPU, memory, network, and disk. Response time lag, if any must be addressed swiftly. Here we'll take a look at how to Monitor servers (and even Docker Containers running inside the Server) using Grafana, Prometheus, Node Exporter, CAdvisor and Flask App.
 
 ![Prometheus overview](images/docker-prometheus-overview.png)
@@ -8,6 +9,7 @@ Infrastructure monitoring is the basis for application performance management. T
 ---
 
 ## 2. Core Components
+
 - Grafana- Database for Analytics & monitoring solution
 - Prometheus- Event monitoring and alerting
 - Node-Exporter- Monitoring Linux host metrics
@@ -17,6 +19,7 @@ Infrastructure monitoring is the basis for application performance management. T
 ---
 
 ## 3. Running Docker Compose Up
+
 ```
 $ docker-compose build
 
@@ -27,7 +30,7 @@ Starting docker-monitoring_node-exporter_1 ... done
 Starting docker-monitoring_flask_app_1     ... done
 ...
 Starting docker-monitoring_grafana_1       ... done
-Attaching to docker-monitoring_alertmanager_1, docker-monitoring_flask_app_1, docker-monitoring_node-exporter_1, docker-monitoring_cadvisor_1, docker-monitoring_redis_1, 
+Attaching to docker-monitoring_alertmanager_1, docker-monitoring_flask_app_1, docker-monitoring_node-exporter_1, docker-monitoring_cadvisor_1, docker-monitoring_redis_1,
 ....
 alertmanager_1   | level=info ts=2021-01-10T02:35:10.540Z caller=cluster.go:161 component=cluster msg="setting advertise address explicitly" addr=172.24.0.2 port=9094
 cadvisor_1       | W0110 02:35:10.890139       1 manager.go:349] Could not configure a source for OOM detection, disabling OOM events: open /dev/kmsg: no such file or directory
@@ -41,6 +44,7 @@ flask_app_1      | 172.24.0.7 - - [10/Jan/2021 02:38:13] "GET /metrics HTTP/1.1"
 ---
 
 ## 4. Grafana UI
+
 http://localhost:3001
 
 Login with
@@ -48,9 +52,11 @@ id: admin
 pw: 1234
 
 ### Docker container dashboard
+
 ![Docker container dashboard](images/docker-container-monitoring.png)
 
 ### Flask application dashboard
+
 ![Flask application dashboard](images/flask-app-monitoring.png)
 
 ---
@@ -60,6 +66,7 @@ pw: 1234
 Metrics type: https://prometheus.io/docs/concepts/metric_types/
 
 ### requirements.txt
+
 ```
 flask
 redis
@@ -69,20 +76,24 @@ prometheus-flask-exporter
 ```
 
 ### Prometheus Flask exporter
+
 This library provides HTTP request metrics to export into Prometheus. It can also track method invocations using convenient functions.
 
 https://pypi.org/project/prometheus-flask-exporter/
 
 ### code:
+
 ![acode](images/flask-app-code.png)
 
-
 ## 6. How to configure a scrape on Prometheus
+
 ![How to configure a scrape on Prometheus](images/prometheus_scrape_flask_app.png)
 
 ### Note
+
 > When you add a new source of scrape on Prometheus, you should validate the source of the metrics like cAdvisor, Java Spring API, Django, etc. If the validate of the srape is passed, you can wire into prometheus.yml. Here is how you can test it out with curl command.
-> ``` 
+>
+> ```
 > curl localhost:5000/metrics
 > # HELP python_gc_objects_collected_total Objects collected during gc
 > # TYPE python_gc_objects_collected_total counter
@@ -111,15 +122,18 @@ https://pypi.org/project/prometheus-flask-exporter/
 > # TYPE flask_by_path_counter_created gauge
 > flask_by_path_counter_created{path="/metrics"} 1.6103074201825395e+09
 > '''
+> ```
 
 ---
 
 ## 7. Load simulation with Apache Benchmark
+
 Apache benchmark is a simple-to-use tool to help you understand how an HTTP server copes with large volumes of traffic. https://httpd.apache.org/docs/2.4/programs/ab.html
 
 i.e) Fire 500 requests, with a maximum concurrency of 10 at a time
+
 ```
-$ ab -c 10 —n 500 —r localhost:5000
+$ ab -c 10 —n 500 —r http://localhost:5000
 ```
 
 ```
@@ -192,13 +206,15 @@ $ ab -n 1000 -c 3 http://localhost:5000/foo
 ```
 
 #### Note) alternative GUI tool: With JMeter
-> JMeter is a more powerful tool than Apache Benchmark and allows you to be a bit more specific about 
-> how your traffic is fired. For example, with JMeter it is possible to say “Send 1000 requests spaced > out over 1 minute”, which is much more realistic. It is so configurable that it provides a GUI 
+
+> JMeter is a more powerful tool than Apache Benchmark and allows you to be a bit more specific about
+> how your traffic is fired. For example, with JMeter it is possible to say “Send 1000 requests spaced > out over 1 minute”, which is much more realistic. It is so configurable that it provides a GUI
 > (Graphical User Interface) to help you set up your tests. https://jmeter.apache.org/
 
 ---
 
 ## 8. Folder structure
+
 ```
 ├── README.md
 ├── alertmanager
@@ -229,6 +245,7 @@ $ ab -n 1000 -c 3 http://localhost:5000/foo
 ---
 
 ## Reference:
+
 - Prometheus: https://prometheus.io
 - Prometheus Flask Package: https://github.com/rycus86/prometheus_flask_exporter
 - CAdvisor(System resource montoring): https://github.com/google/cadvisor
